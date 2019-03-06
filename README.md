@@ -1,5 +1,5 @@
 # RSCAM-GradNoise
-# Intro about the project by course organizers
+**Intro about the project by course organizers**
 When Langevin schemes are used in sampling the Bayesian posterior distribution defined
 by a large (huge) data set, the cost of each step can be very high. This has led to a lot of
 work to try to reduce the cost by simplifying the gradient. The most popular method of this
