@@ -13,11 +13,18 @@ gradient noise adaptively.
 [4.1] Bayesian Learning via Stochastic Gradient Langevin Dynamics, Max Welling and Yee
 Whye Teh, Proceedings of the 28th International Conference on Machine Learning, 2011.
 https://www.ics.uci.edu/~welling/publications/papers/stoclangevin_v6.pdf
+
 [4.2] Exploration of the (Non-)Asymptotic Bias and Variance of Stochastic Gradient
 Langevin Dynamics, Sebastian J. Vollmer, Konstantinos C. Zygalakis, and Yee Whye Teh,
 J. Mach. Learn. Res., 17, 1−48, 2016
 http://jmlr.org/papers/volume17/15-494/15-494.pdf
+
 [4.3] Stochastic Gradient Hamiltonian Monte Carlo, Tianqi Chen, Emily B. Fox and Carlos
 Guestrin, Proceedings of the 31st International Conference on Machine Learning, Beijing,
 China, 2014.
 https://arxiv.org/pdf/1402.4102.pdf
+
+
+[4.4] Adaptive Thermostats for Noisy Gradient Systems, Benedict Leimkuhler and
+Xiaocheng Shang, SIAM J Sci Comp., 38, A712–A736, 2016
+https://epubs.siam.org/doi/pdf/10.1137/15M102318X
