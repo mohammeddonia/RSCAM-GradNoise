@@ -1,0 +1,150 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[toc,page]{appendix}
+\usepackage{amssymb,fullpage,MnSymbol,mathrsfs}
+\usepackage{amsmath}
+\usepackage{graphicx,latexsym,amsfonts}
+\usepackage{hyperref}
+\usepackage{geometry}\geometry{verbose,tmargin=1in,bmargin=1 in,lmargin=1 in,rmargin=1 in}
+\usepackage{etoolbox}
+\patchcmd{\thebibliography}{\section*}{\section}{}{}
+\usepackage{verbatim}
+\usepackage{siunitx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{cancel}
+\usepackage{caption}
+\usepackage{cleveref}
+\usepackage{colortbl}
+\usepackage{csquotes}
+\usepackage{helvet}
+\usepackage{multirow}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{lipsum}
+
+
+\title{RSCAM Group Project\\[2ex]
+\bf A Comparison of Noisy Gradient Methods%\\[2ex]
+    %   \rm\normalsize RSCAM
+}
+\author{Jikai Yan,
+Katherine Edgley,
+Konstantinos Brazitikos,
+Mohamed Donia\\[1ex]
+School of Mathematics, University of Edinburgh, Edinburgh, EH9 3FD, UK}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\begin{abstract} Which one?
+\lipsum[3] Short introduction to subject of the paper \ldots 
+\end{abstract}
+
+will we use table of contents?
+\tableofcontents
+
+\section{Introduction}
+SGLD\cite{Welling:2011:BLV:3104482.3104568}
+zygalakis\cite{JMLR:v17:15-494}
+sgHMC\cite{Chen:2014:SGH:3044805.3045080}
+thermostat\cite{doi:10.1137/15M102318X}
+
+matlab code \cite{matlab}
+
+python code \cite{python}
+presentation \cite{presentation}
+(maybe not)
+
+
+\section{Stochastic Gradient}
+
+Markov Chain Monte Carlo (MCMC) algorithms can prove useful for Bayesian learning from datasets, and in particular Bayesian learning algorithms allow for a quantification of uncertainty in the model as well as avoid overfitting. However, MCMC methods typically require computation using the entire dataset. For instance, Bayesian learning methods that employ Langevin dynamics require a gradient computation over the entire dataset. Similarly, some MCMC methods use a Metropolis-Hasting step which involves computation over the whole dataset, in order to reject or accept the proposed sample. \par
+A different class of methods that aims to simply optimize the model parameter using Maximum Likelihood (ML) estimation or Maximum a posteriori probability (MAP) estimation as opposed to sampling from the posterior distribution works particularly well with large datasets. For instance, stochastic optimization algorithms, based off of foundings by Robbins and Monro in 1951 (CITE?), perform successive optimization steps by using only a minibatch of the data, allowing for efficient optimization on very large datasets. \par
+
+For both of these method classes, stochastic optimization using MAP estimation and Langevin dynamics based Bayesian methods, we define the problem similarly.
+Assuming we have data $x_i \in \mathcal{D}$ for $i=1,...,N$, a typical stochastic optimization algorithm aims to maximize the a posteriori probability (MAP estimation), where the posterior distribution is given by: $p(\theta|\mathcal{D}) \propto{p(\theta)\prod_{i=1}^N p(x_i |\theta)}$. Here, $\theta$ is the model parameter (a vector) we aim to optimize, given the data, with prior distribution $\rho_{prior} := p(\theta)$. 
+Langevin dynamics methods, however, are based off of a discretized, two-dimensional stochastic differential equation which has an equilibrium distribution equivalent to the posterior distribution we would like to sample from. In the terms of the physical Langevin dynamics system, the equilibrium distribution we sample from is distributed proportionally to the exponential of the negative potential energy function $U(\theta)$. Langevin dynamics involve a position and momentum variable, $\theta$ and $r$, where the latter is described by a stochastic differential equation using a force term $-\nabla U(\theta)$, the negative gradient of the potential energy function.
+
+Therefore, if we assume the posterior distribution we would like to sample from is distributed as follows \cite[Equation 1]{Chen:2014:SGH:3044805.3045080}:
+\begin{align}
+    p(\theta|\mathcal{D}) \propto {\exp(-U(\theta))},
+\end{align}
+then the potential energy function $U(\theta)$ may be described by the negative log-posterior distribution,
+
+\begin{align}
+    U(\theta)= -\sum_{i=1}^N \log p(x_i|\theta) - \log p(\theta).
+\end{align}
+
+\par
+As a result, by contriving the Langevin dynamics system to have a force function corresponding to the log-posterior distribution, an MCMC method using the Langevin dynamics as described will converge to sampling from its equilibrium distribution, i.e. the posterior distribution. \par 
+However, the gradient term used in this algorithm, $\nabla U(\theta)$, requires computation over the entire dataset, and therefore, as in stochastic optimization, in this paper we will focus on methods that use only a subset of the dataset, a minibatch, to compute the gradient term. Due to the inaccurate nature of this gradient approximation, a stochastic element is introduced into the algorithm by the gradient, hence naming the gradient of a minibatch the \textit{stochastic gradient}, given by the following expression:
+
+\begin{align} \label{stochasticgradient}
+\nabla \tilde{U}(\theta) = - \nabla \log p(\theta) -\frac{N}{n}\sum_{i=1}^n\nabla \log p(x_{i}|\theta),
+\end{align}
+where $\{x_i\}_{i=1}^n \in \mathcal{D}$ is the minibatch of data the gradient is computed from, and $|\mathcal{D}| = N$ is the size of the entire dataset. 
+\par
+In general, the methods described in this paper use a minibatch of the data drawn uniformly at random from the entire dataset, with or without replacement, depending on the problem at hand.
+
+
+\section{Langevin Dynamics}
+
+
+\section{Stochastic Gradient Langevin Dynamics (SGLD)}
+
+
+\section{Stochastic Gradient Hamiltonian Monte Carlo (SGHMC)}
+The SGLD method does not employ the nature of the gradient noise -- the noise resulting from calculating the gradient using only a minibatch of the data -- to more effectively minimize the effect of that noise. A method introduced in 2014 by Chen, Fox, and Guestrin attempts to use the covariance of the gradient noise in order to better cancel out the divergence of trajectories that the stochastic gradient introduces \cite{Chen:2014:SGH:3044805.3045080}. Specifically, they use a second order Langevin Dynamics parameter update step as opposed to the first order step in SGLD along with a friction term to ensure that the algorithm samples from the correct posterior distribution. \par
+The method introduced in \cite{Chen:2014:SGH:3044805.3045080} is titled Stochastic Gradient Hamiltonian Monte Carlo (SGHMC), originally based off of the Hamiltonian/Hybrid Monte Carlo method (HMC). HMC uses Hamiltonian dynamics, a classical physical system involving a position and momentum term, to propose samples, along with a Metropolis-Hasting step that involves computation over the entire dataset to decide whether to accept or reject the proposed sample. For HMC as well as SGHMC, only the position variable, which we call $\theta$, will be of importance as it represents the model parameter we aim to update in order to sample from the posterior distribution $p(\theta|\mathcal{D})$, where $\mathcal{D}$ is the given data. Despite the name Stochastic Gradient Hamiltonian Monte Carlo, this method is essentially a second-order Langevin dynamics method, in many ways an extension of SGLD. In fact, SGLD can be considered equivalent to SGHMC in the limit where friction term is large \cite[\S 3.2]{Chen:2014:SGH:3044805.3045080}. 
+\par
+Beginning with a HMC method and applying a stochastic gradient, we would have the following update step in each iteration of the algorithm:
+\begin{align}
+\begin{split}
+\begin{cases}
+    \theta_{j+1} &= \theta_j - \epsilon r_j\\
+r_{j+1}&= r_{j} - \epsilon\nabla\tilde{U}(\theta_j).
+\end{cases}
+\end{split}
+\end{align}
+
+The noise introduced by the stochastic gradient can be written explicitly. In particular, if we assume that our data consists of independently sampled points, and we also use a minibatch large enough that the central limit theorem holds (we may assume the subset of data has a Gaussian distribution), we may rewrite the Hamiltonian system from HMC with the added gradient noise:
+\begin{align}
+\begin{split}
+\begin{cases}
+  d\theta &= M^{-1}r dt \\
+  dr &= -\nabla U(\theta)dt + \mathcal{N}(0,\epsilon V(\theta)dt),
+  \end{cases}
+\end{split}
+\end{align}
+where $V(\theta)$ gives the covariance of the noise from the stochastic gradient, $\nabla\tilde{U}(\theta)$
+
+
+\section{Modified SGLD}
+
+% the model uses sequences of decreasing step sizes
+In the initial proposal for the SGLD in \cite{Welling:2011:BLV:3104482.3104568}, in addition to some other assumptions, the step size $\epsilon$ needs to satisfy that
+
+\begin{equation}
+\sum_{t=1}^{\infty} \epsilon_{t}=\infty \quad \text{ and } \quad \sum_{t=1}^{\infty} \epsilon_{t}^{2}<\infty,
+\end{equation}
+in order to ensure convergence to a local maximum. Of these two, the first constraint ensures that parameters will reach the high probability regions no matter where it was initialized to, while the second ensures that the parameters will converge to the mode eventually, instead of just bouncing around it. 
+In [Teh et. al. \cite{proofsgld}] it was proven rigorously why this works for this method. However, since in most cases the method is not run long enough to get the step size to decrease to zero, the case rises where the step size is fixed. 
+
+Actually, even in the original proposal it is mentioned that in practice the step size only decreases up to a certain point in the initial adaptation phase and afterwards fix it. In \cite{JMLR:v17:15-494} the SGLD behaviour with a fixed step size is investigated. 
+In more detail, we can look at our methods from two different perspectives. The asymptotic and finite time one. 
+% ASYMPTOTIC BIAS
+
+
+\section{Comparisons and Summary}
+
+
+\section{Conclusions}
+
+
+\bibliographystyle{unsrt}
+\bibliography{refs}
+
+\end{document}
